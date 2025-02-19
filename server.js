@@ -5,6 +5,8 @@
 
 'use strict';
 
+import { getLatest, getMapping } from './src/calls';
+
 const express = require('express');
 
 // Constants
@@ -15,6 +17,15 @@ const HOST = '0.0.0.0';
 const app = express();
 app.get('/', (req, res) => {
 	res.send('Hello remote world!\n');
+});
+
+app.get('/latest', async (req, res) => {
+	console.log(req.query)
+	res.send(await getLatest(req.query.id));
+});
+
+app.get('/mapping', async (req, res) => {
+	res.send(await getMapping());
 });
 
 app.listen(PORT, HOST);
