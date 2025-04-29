@@ -1,6 +1,6 @@
-import type { Maybe, Timestep } from "./types"
+import type { LatestDataResponse, Maybe, Timestep } from "./types"
 
-export const getLatest = async (id: Maybe<string>) => {
+export const getLatest = async (id: Maybe<string>): Promise<LatestDataResponse> => {
     const params = new URLSearchParams()
     if(id) params.append("id",id)
     const r = await fetch(`https://prices.runescape.wiki/api/v1/osrs/latest?${params}`)
