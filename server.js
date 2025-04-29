@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { getFiveMinAverage, getOneHourAverage, getLatest, getMapping } from './src/calls';
+import { getFiveMinAverage, getOneHourAverage, getTimeSeries, getLatest, getMapping } from './src/calls';
 
 const express = require('express');
 
@@ -36,6 +36,11 @@ app.get('/5m', async (req, res) => {
 app.get('/1h', async (req, res) => {
 	console.log(req.query)
 	res.send(await getOneHourAverage(req.query.timestamp));
+});
+
+app.get('/timeseries', async (req, res) => {
+	console.log(req.query)
+	res.send(await getTimeSeries(req.query.id, req.query.timestep));
 });
 
 

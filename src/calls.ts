@@ -25,3 +25,11 @@ export const getOneHourAverage = async (timestamp: Maybe<string>) => {
     const r = await fetch(`https://prices.runescape.wiki/api/v1/osrs/1h?${params}`)
     return await r.json()
 }
+
+export const getTimeSeries = async (id: number, timestep: string) => {
+    const params = new URLSearchParams()
+    params.append("id",id+"");
+    params.append("timestep", timestep);
+    const r = await fetch(`https://prices.runescape.wiki/api/v1/osrs/timeseries?${params}`)
+    return await r.json()
+}
