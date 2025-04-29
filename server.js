@@ -6,12 +6,15 @@
 'use strict';
 
 import { getFiveMinAverage, getOneHourAverage, getTimeSeries, getLatest, getMapping } from './src/calls';
+import { OldSchoolPriceAPI } from './src/client';
 
 const express = require('express');
 
 // Constants
 const PORT = 3000;
 const HOST = '0.0.0.0';
+
+const client = new OldSchoolPriceAPI();
 
 // App
 const app = express();
@@ -21,26 +24,26 @@ app.get('/', (req, res) => {
 
 app.get('/latest', async (req, res) => {
 	console.log(req.query)
-	res.send(await getLatest(req.query.id));
+	res.send(await client.getLatest(req.query.id));
 });
 
 app.get('/mapping', async (req, res) => {
-	res.send(await getMapping());
+	res.send(await client.getMapping());
 });
 
 app.get('/5m', async (req, res) => {
 	console.log(req.query)
-	res.send(await getFiveMinAverage(req.query.timestamp));
+	res.send(await client.getFiveMinAverage(req.query.timestamp));
 });
 
 app.get('/1h', async (req, res) => {
 	console.log(req.query)
-	res.send(await getOneHourAverage(req.query.timestamp));
+	res.send(await client.getOneHourAverage(req.query.timestamp));
 });
 
 app.get('/timeseries', async (req, res) => {
 	console.log(req.query)
-	res.send(await getTimeSeries(req.query.id, req.query.timestep));
+	res.send(await client.getTimeSeries(req.query.id, req.query.timestep));
 });
 
 
