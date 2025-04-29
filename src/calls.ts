@@ -1,4 +1,4 @@
-import type { Maybe } from "./types"
+import type { Maybe, Timestep } from "./types"
 
 export const getLatest = async (id: Maybe<string>) => {
     const params = new URLSearchParams()
@@ -26,7 +26,7 @@ export const getOneHourAverage = async (timestamp: Maybe<string>) => {
     return await r.json()
 }
 
-export const getTimeSeries = async (id: number, timestep: string) => {
+export const getTimeSeries = async (id: number, timestep: Timestep) => {
     const params = new URLSearchParams()
     params.append("id",id+"");
     params.append("timestep", timestep);
