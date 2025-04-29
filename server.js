@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { getLatest, getMapping } from './src/calls';
+import { getFiveMinAverage, getOneHourAverage, getLatest, getMapping } from './src/calls';
 
 const express = require('express');
 
@@ -27,6 +27,17 @@ app.get('/latest', async (req, res) => {
 app.get('/mapping', async (req, res) => {
 	res.send(await getMapping());
 });
+
+app.get('/5m', async (req, res) => {
+	console.log(req.query)
+	res.send(await getFiveMinAverage(req.query.timestamp));
+});
+
+app.get('/1h', async (req, res) => {
+	console.log(req.query)
+	res.send(await getOneHourAverage(req.query.timestamp));
+});
+
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
