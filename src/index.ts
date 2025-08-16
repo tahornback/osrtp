@@ -45,6 +45,7 @@ interface TimeSeriesData {
 }
 
 const OSRTP_API_BASE_URL = "https://prices.runescape.wiki/api/v1/osrs";
+const USER_AGENT = "osrtp - https://github.com/thornback/osrtp";
 
 class OSRTPClient {
   private readonly baseUrl: string;
@@ -53,97 +54,54 @@ class OSRTPClient {
     this.baseUrl = OSRTP_API_BASE_URL;
   }
 
-  async getLatestPrices(): Promise<LatestPrices> {
-    const response = await fetch(`${this.baseUrl}/latest`, {
+  private async _fetch<T>(path: string, params: Record<string, string | number> = {}): Promise<T> {
+    const url = new URL(`${this.baseUrl}${path}`);
+    Object.keys(params).forEach(key => url.searchParams.append(key, String(params[key])));
+
+    const response = await fetch(url.toString(), {
       headers: {
-        // TODO: Replace with a proper User-Agent
-        "User-Agent": "osrtp - https://github.com/thornback/osrtp",
+        "User-Agent": USER_AGENT,
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch latest prices: ${response.statusText}`);
+      throw new Error(`Failed to fetch ${path}: ${response.statusText}`);
     }
 
-    const { data } = await response.json() as ApiResponse<LatestPrices>;
+    if (path === "/mapping") {
+      return response.json() as Promise<T>;
+    }
+
+    const { data } = await response.json() as ApiResponse<T>;
     return data;
+  }
+
+  async getLatestPrices(): Promise<LatestPrices> {
+    return this._fetch<LatestPrices>("/latest");
   }
 
   async getMapping(): Promise<ItemMapping[]> {
-    const response = await fetch(`${this.baseUrl}/mapping`, {
-      headers: {
-        // TODO: Replace with a proper User-Agent
-        "User-Agent": "osrtp - https://github.com/thornback/osrtp",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch item mapping: ${response.statusText}`);
-    }
-
-    return await response.json() as ItemMapping[];
+    return this._fetch<ItemMapping[]>("/mapping");
   }
 
   async get5mAvg(timestamp?: number): Promise<AveragedPrices> {
-    const url = new URL(`${this.baseUrl}/5m`);
-    if (timestamp) {
-      url.searchParams.append("timestamp", timestamp.toString());
+    const params: Record<string, number> = {};
+    if (timestamp !== undefined) {
+      params.timestamp = timestamp;
     }
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        // TODO: Replace with a proper User-Agent
-        "User-Agent": "osrtp - https://github.com/thornback/osrtp",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch 5m averaged prices: ${response.statusText}`);
-    }
-
-    const { data } = await response.json() as ApiResponse<AveragedPrices>;
-    return data;
+    return this._fetch<AveragedPrices>("/5m", params);
   }
 
   async get1hAvg(timestamp?: number): Promise<AveragedPrices> {
-    const url = new URL(`${this.baseUrl}/1h`);
-    if (timestamp) {
-      url.searchParams.append("timestamp", timestamp.toString());
+    const params: Record<string, number> = {};
+    if (timestamp !== undefined) {
+      params.timestamp = timestamp;
     }
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        // TODO: Replace with a proper User-Agent
-        "User-Agent": "osrtp - https://github.com/thornback/osrtp",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch 1h averaged prices: ${response.statusText}`);
-    }
-
-    const { data } = await response.json() as ApiResponse<AveragedPrices>;
-    return data;
+    return this._fetch<AveragedPrices>("/1h", params);
   }
 
   async getTimeSeries(id: number, timestep: TimeStep): Promise<TimeSeriesData[]> {
-    const url = new URL(`${this.baseUrl}/timeseries`);
-    url.searchParams.append("id", id.toString());
-    url.searchParams.append("timestep", timestep);
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        // TODO: Replace with a proper User-Agent
-        "User-Agent": "osrtp - https://github.com/thornback/osrtp",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch time series data: ${response.statusText}`);
-    }
-
-    const { data } = await response.json() as ApiResponse<TimeSeriesData[]>;
-    return data;
+    return this._fetch<TimeSeriesData[]>("/timeseries", { id, timestep });
   }
 }
 
