@@ -121,6 +121,7 @@ const paginatedItems = computed(() => {
 })
 
 const formatPrice = (price: number) => {
+  if (!price && price !== 0) return '0'
   if (price >= 1000000) {
     return (price / 1000000).toFixed(2) + 'M'
   } else if (price >= 1000) {

@@ -201,6 +201,7 @@ const drawChart = () => {
 }
 
 const formatPrice = (price: number) => {
+  if (!price && price !== 0) return '0'
   if (price >= 1000000) {
     return (price / 1000000).toFixed(2) + 'M'
   } else if (price >= 1000) {
@@ -210,6 +211,7 @@ const formatPrice = (price: number) => {
 }
 
 const formatNumber = (num: number) => {
+  if (!num && num !== 0) return '0'
   if (num >= 1000000) {
     return (num / 1000000).toFixed(1) + 'M'
   } else if (num >= 1000) {
